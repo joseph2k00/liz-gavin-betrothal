@@ -43,11 +43,6 @@
     return date.toLocaleDateString("en-GB", { ...options, timeZone: "UTC" });
   }
 
-  function longDate(value) {
-    const weekday = formatDate(value, { weekday: "long" });
-    return `${weekday}, ${shortDate(value)}`;
-  }
-
   function shortDate(value) {
     return formatDate(value, { day: "numeric", month: "long", year: "numeric" });
   }
@@ -156,40 +151,59 @@
 
   // Invitation
 
-  function renderFamily(side) {
+  function renderFamily(side, relation) {
     return el("div", { class: "family" },
+      el("p", { class: "child" }, side.child),
+      el("p", { class: "relation" }, relation),
       el("p", { class: "parents" }, field(side.parents)),
-      el("p", { class: "home" }, field(side.home)),
-      el("p", { class: "parents-of" }, "parents of"),
-      el("h1", { class: "child" }, side.child)
+      el("p", { class: "home" }, field(side.home))
     );
   }
 
-  function venueLine(event) {
-    return el("p", { class: "venue-line" }, field(event.venue), ", ", field(event.town));
+  function renderDetail(icon, label, value, note) {
+    return el("div", { class: "detail" },
+      el("img", { src: `assets/icon-${icon}.svg`, alt: "", width: "48", height: "48" }),
+      el("div", {},
+        el("p", { class: "detail-label" }, label),
+        el("p", { class: "detail-value" }, ...value),
+        note ? el("p", { class: "detail-note" }, ...note) : ""
+      )
+    );
+  }
+
+  function renderBetrothalDetails(event) {
+    return el("div", {},
+      el("div", { class: "details" },
+        renderDetail("location", "Location", [field(event.venue)], [field(event.address)]),
+        renderDetail("time", "Time",
+          [isTime(event.start) ? formatTime(event.start) : field(event.start)],
+          [`during the ${INVITE.liturgyTerm}`]
+        ),
+        renderDetail("date", "Date",
+          [isDate(INVITE.date) ? shortDate(INVITE.date) : field(INVITE.date)],
+          isDate(INVITE.date) ? [formatDate(INVITE.date, { weekday: "long" })] : null
+        )
+      ),
+      renderEventActions(event)
+    );
   }
 
   function renderInvitation() {
-    const [betrothal, reception] = INVITE.events;
     return el("header", {},
+      el("img", { class: "logo", src: "assets/rings.svg", alt: "", width: "96", height: "72" }),
       el("p", { class: "blessing" }, INVITE.blessing),
-      el("div", { class: "families" },
-        renderFamily(INVITE.brideSide),
-        el("p", { class: "joiner" }, "and"),
-        renderFamily(INVITE.groomSide)
+      el("h1", { class: "ceremony-title" }, "Betrothal Ceremony"),
+      el("div", { class: "heart-rule" },
+        el("img", { src: "assets/heart.svg", alt: "", width: "22", height: "16" })
       ),
-      el("div", { class: "request" },
-        el("div", { class: "request-group" },
-          el("p", {}, "request the pleasure of your esteemed presence"),
-          el("p", {}, "at the betrothal of their children"),
-          el("p", {}, `during the ${INVITE.liturgyTerm} at`),
-          venueLine(betrothal)
-        ),
-        el("div", { class: "request-group" },
-          el("p", {}, "and at the reception thereafter at"),
-          venueLine(reception)
-        )
-      )
+      el("p", { class: "invite-line invite-opening" }, "With joyful hearts, we invite you to celebrate the betrothal of"),
+      el("div", { class: "families" },
+        renderFamily(INVITE.brideSide, "daughter of"),
+        el("p", { class: "joiner" }, "&"),
+        renderFamily(INVITE.groomSide, "son of")
+      ),
+      el("p", { class: "invite-line invite-closing" }, "as they begin a beautiful new chapter together"),
+      renderBetrothalDetails(INVITE.events[0])
     );
   }
 
@@ -212,7 +226,7 @@
     );
   }
 
-  function renderEvent(event) {
+  function renderEventActions(event) {
     const actions = el("div", { class: "event-actions" });
     if (!isTBD(event.mapsUrl)) {
       actions.append(el("a", { class: "action", href: event.mapsUrl, target: "_blank", rel: "noopener" }, "Directions"));
@@ -220,20 +234,32 @@
     if (isDate(INVITE.date) && isTime(event.start) && isTime(event.end) && !isTBD(event.venue) && !isTBD(event.address)) {
       actions.append(renderCalendar(event));
     }
-    return el("section", { class: "event" },
+    return actions;
+  }
+
+  function renderEvent(event) {
+    return el("section", {},
       el("h2", { class: "event-title" }, event.title),
       el("p", { class: "event-time" }, eventTime(event)),
+      el("p", { class: "event-date" }, isDate(INVITE.date) ? `${formatDate(INVITE.date, { weekday: "long" })}, ${shortDate(INVITE.date)}` : field(INVITE.date)),
       el("p", { class: "event-venue" }, field(event.venue)),
       el("p", { class: "event-address" }, field(event.address)),
-      actions
+      renderEventActions(event)
     );
   }
 
+  // The betrothal's details sit in the invitation, so only the reception gets a section here.
   function renderDetails() {
+    const reception = INVITE.events.find((event) => event.id === "reception");
     return el("div", {},
-      el("img", { class: "divider", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
-      el("p", { class: "date" }, isDate(INVITE.date) ? longDate(INVITE.date) : field(INVITE.date)),
-      ...INVITE.events.map(renderEvent)
+      el("div", { class: "with-love" },
+        el("img", { class: "divider", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
+        el("p", { class: "with-love-title" }, "With love"),
+        el("img", { class: "with-love-heart", src: "assets/heart.svg", alt: "", width: "22", height: "16" }),
+        el("p", { class: "with-love-names" }, field(INVITE.withLove)),
+        el("img", { class: "divider divider-flipped", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" })
+      ),
+      renderEvent(reception)
     );
   }
 

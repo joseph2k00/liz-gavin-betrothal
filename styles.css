@@ -44,7 +44,7 @@ body {
 main {
   max-width: 560px;
   margin: 0 auto;
-  padding: 104px 20px 120px;
+  padding: 28px 20px 120px;
   text-align: center;
   animation: fade-in 900ms ease-out both;
 }
@@ -82,7 +82,7 @@ body::after { bottom: 4px; right: 0; --flip: scale(-1, -1); }
 /* With room beside the text, tall vines climb both sides of the page instead. */
 @media (min-width: 900px) {
   main {
-    padding: 64px 20px 72px;
+    padding: 48px 20px 72px;
   }
 
   main::before,
@@ -150,6 +150,13 @@ h3 {
 
 /* Invitation */
 
+.logo {
+  display: block;
+  width: 96px;
+  height: auto;
+  margin: 0 auto 24px;
+}
+
 .blessing {
   color: var(--accent-text);
   font-family: var(--serif);
@@ -159,8 +166,39 @@ h3 {
   line-height: 1.3;
 }
 
+.ceremony-title {
+  margin-top: 20px;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.heart-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 240px;
+  margin: 10px auto 0;
+}
+
+.heart-rule::before,
+.heart-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--accent);
+}
+
+.heart-rule img {
+  display: block;
+  width: 18px;
+  height: auto;
+}
+
 .families {
-  margin-top: 40px;
+  margin-top: 24px;
 }
 
 .parents {
@@ -171,8 +209,23 @@ h3 {
   color: var(--muted);
 }
 
-.parents-of {
-  margin-top: 12px;
+.invite-line {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.invite-opening {
+  margin-top: 32px;
+}
+
+.invite-closing {
+  margin-top: 32px;
+}
+
+.relation {
+  margin-top: 8px;
   color: var(--muted);
   font-size: 15px;
 }
@@ -193,16 +246,69 @@ h3 {
   font-style: italic;
 }
 
-.request {
-  margin-top: 36px;
+/* Stacked rows on phones, three columns once they fit. */
+.details {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.request .venue-line {
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 4px;
+  text-align: left;
+}
+
+.detail + .detail {
+  border-top: 1px solid var(--line);
+}
+
+.detail img {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+
+.detail-label {
+  color: var(--accent-text);
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.request-group + .request-group {
-  margin-top: 20px;
+.detail-value {
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.detail-note {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+@media (min-width: 520px) {
+  .details {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+  }
+
+  .detail {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 20px 10px;
+    text-align: center;
+  }
+
+  .detail + .detail {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
 }
 
 .divider {
@@ -212,21 +318,47 @@ h3 {
   margin: 44px auto;
 }
 
-/* Events */
+/* With love */
 
-.date {
+.with-love {
+  margin: 44px 0;
+}
+
+.with-love .divider {
+  margin: 0 auto;
+}
+
+.divider-flipped {
+  transform: scaleX(-1);
+}
+
+.with-love-title {
+  margin-top: 20px;
+  color: var(--accent-text);
   font-family: var(--serif);
-  font-size: 30px;
-  font-variant-numeric: lining-nums; /* the default 1 in this font reads as a capital I */
-  font-weight: 600;
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 500;
   line-height: 1.2;
 }
 
-.event {
-  margin-top: 36px;
-  padding-top: 36px;
-  border-top: 1px solid var(--line);
+.with-love-heart {
+  display: block;
+  width: 16px;
+  height: auto;
+  margin: 8px auto;
 }
+
+.with-love-names {
+  margin-bottom: 20px;
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: balance; /* keeps a surname from dropping onto its own line */
+}
+
+/* Events */
 
 .event-title {
   color: var(--accent-text);
@@ -239,6 +371,10 @@ h3 {
 .event-time {
   margin-top: 8px;
   font-weight: 600;
+}
+
+.event-date {
+  color: var(--muted);
 }
 
 .event-venue {

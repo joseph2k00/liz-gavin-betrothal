@@ -13,7 +13,7 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Area | Decision |
 |---|---|
 | Tradition | Catholic |
-| Host voice | Both sets of parents |
+| Host voice | "We", with both sets of parents named under the couple |
 | Parent naming | Name + house name + home town |
 | Faith touch | Opening blessing line only: "By the grace of God Almighty" |
 | Language | English only |
@@ -41,14 +41,15 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 
 One scrolling page, in this order:
 
-1. **Blessing line**
-2. **Invitation wording**, with both sets of parents and the couple's names
-3. **Fine-line olive-branch divider**
-4. **Date**
-5. **Event: Betrothal**: time, church, town, Directions, Add to Calendar
-6. **Event: Reception**: time, hall, town, Directions, Add to Calendar
-7. **RSVP form**
-8. **Short closing line**, e.g. "With love and prayers"
+1. **Logo**: interlocked rings with a small heart
+2. **Blessing line**
+3. **"Betrothal Ceremony" heading**, underlined with a gold rule that has a heart in the middle
+4. **Invitation wording**, with both sets of parents and the couple's names
+5. **Betrothal details**: illustrated location, time and date sections, then Directions and Add to Calendar
+6. **"With love" message**: Rose Tom, Jose Tom and Aiwin Paul, with a small heart, between two mirrored olive branches
+7. **Event: Reception**: time, date, hall, address, Directions, Add to Calendar
+8. **RSVP form**
+9. **Short closing line**, e.g. "With love and prayers"
 
 ## 4. Wording
 
@@ -57,28 +58,36 @@ Square brackets are placeholders, to be filled in `content.js`.
 ```text
 By the grace of God Almighty
 
+Betrothal Ceremony
+
+With joyful hearts, we invite you to celebrate the betrothal of
+
+Liz Tom
+daughter of
 Mr. [Father] & Mrs. [Mother] [Family]
 [House], [Town]
-parents of
-Liz
 
-and
+&
 
+Gavin Paul
+son of
 Mr. [Father] & Mrs. [Mother] [Family]
 [House], [Town]
-parents of
-Gavin
 
-request the pleasure of your esteemed presence
-at the betrothal of their children
-during the Holy Mass at
-[Church], [Town]
+as they begin a beautiful new chapter together
 
-and at the reception thereafter at
-[Hall], [Town]
+[Pin icon]      Location   [Church], [Town]
+[Clock icon]    Time       [Start time], during the Holy Qurbana
+[Calendar icon] Date       [Date], [Weekday]
+
+Reception
+[Time]
+[Weekday], [Date]
+[Hall]
+[Address]
 ```
 
-This adjusts the selected wording in two ways: "at their betrothal" becomes "at the betrothal of their children", because "their" would otherwise read as the parents; and a reception line is added.
+The opening, the names and the "new chapter" line are the family's own wording. The betrothal's location, time and date appear as three illustrated sections: stacked rows on phones, and three columns from 520px.
 
 Parent names need to allow for titles such as "Dr." and for a late parent, e.g. "Late Mr. [Father] & Mrs. [Mother]". Each parent line is therefore free text. The family should confirm how they want this worded.
 
@@ -135,6 +144,7 @@ liz-gavin-betrothal/
   main.js             Renders content, RSVP form, calendar links
   assets/
     olive-branch.svg
+    rings.svg         Interlocked rings and heart logo at the top of the page
     vine.svg          Repeating side vine for screens 900px and wider
     corner-sprig.svg  Corner decoration for phones and tablets
     og-image.png      1200x630 image for the WhatsApp preview
@@ -159,9 +169,9 @@ window.INVITE = {
   replyBy: "[TBD: YYYY-MM-DD]",
   events: [
     { id: "betrothal", title: "Betrothal", start: "[TBD: HH:MM]", end: "[TBD: HH:MM]",
-      venue: "[TBD]", town: "[TBD]", address: "[TBD]", mapsUrl: "[TBD]" },
+      venue: "[TBD]", address: "[TBD]", mapsUrl: "[TBD]" },
     { id: "reception", title: "Reception", start: "[TBD: HH:MM]", end: "[TBD: HH:MM]",
-      venue: "[TBD]", town: "[TBD]", address: "[TBD]", mapsUrl: "[TBD]" },
+      venue: "[TBD]", address: "[TBD]", mapsUrl: "[TBD]" },
   ],
   closing: "With love and prayers",
   rsvpEndpoint: "[TBD]",
