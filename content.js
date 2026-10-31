@@ -12,6 +12,7 @@ window.INVITE = {
     parents: "[TBD: Mr. Father & Mrs. Mother Family]",
     home: "[TBD: House, Town]",
   },
+  verse: { text: "I have found the one whom my soul loves", reference: "Song of Solomon 3:4" },
   liturgyTerm: "Holy Qurbana", // the church is Syro-Malabar; family to confirm
   date: "2026-12-26",
   replyBy: "[TBD: YYYY-MM-DD]",

@@ -41,13 +41,13 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 
 One scrolling page, in this order:
 
-1. **Logo**: interlocked rings with a small heart
+1. **Logo**: interlocked rings with a small heart, followed by the Bible verse
 2. **Blessing line**
 3. **"Betrothal Ceremony" heading**, underlined with a gold rule that has a heart in the middle
 4. **Invitation wording**, with both sets of parents and the couple's names
-5. **Betrothal details**: illustrated location, time and date sections, then Directions and Add to Calendar
-6. **"With love" message**: Rose Tom, Jose Tom and Aiwin Paul, with a small heart, between two mirrored olive branches
-7. **Event: Reception**: time, date, hall, address, Directions, Add to Calendar
+5. **Event: Betrothal**, between two mirrored olive branches: illustrated location, time and date sections, then Directions and Add to Calendar
+6. **Event: Reception**: the same three sections, then Directions and Add to Calendar
+7. **"With love" message**: Rose Tom, Jose Tom and Aiwin Paul, with a small heart, between two mirrored olive branches
 8. **RSVP form**
 9. **Short closing line**, e.g. "With love and prayers"
 
@@ -56,6 +56,9 @@ One scrolling page, in this order:
 Square brackets are placeholders, to be filled in `content.js`.
 
 ```text
+"I have found the one whom my soul loves"
+Song of Solomon 3:4
+
 By the grace of God Almighty
 
 Betrothal Ceremony
@@ -255,7 +258,7 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 
 ## 8. Directions and calendar
 
-- **Directions:** each event links to its `mapsUrl`, which opens the Maps app on most phones. Use the exact pin from Google Maps, because searching by name can land on a similarly named church or hall.
+- **Directions:** each event has its own button linking to its `mapsUrl`, which opens the Maps app on most phones. Use the exact pin from Google Maps, because searching by name can land on a similarly named church or hall.
 - **Add to Calendar:** each event offers Google Calendar (a prefilled link) and Apple / Other (an `.ics` file generated in the browser). Times use `Asia/Kolkata`.
 - **In-app browser:** WhatsApp's browser may handle `.ics` downloads poorly, so this needs testing on real iPhone and Android devices. The Google Calendar link is the fallback.
 

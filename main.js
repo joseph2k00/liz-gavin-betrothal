@@ -171,26 +171,13 @@
     );
   }
 
-  function renderBetrothalDetails(event) {
-    return el("div", {},
-      el("div", { class: "details" },
-        renderDetail("location", "Location", [field(event.venue)], [field(event.address)]),
-        renderDetail("time", "Time",
-          [isTime(event.start) ? formatTime(event.start) : field(event.start)],
-          [`during the ${INVITE.liturgyTerm}`]
-        ),
-        renderDetail("date", "Date",
-          [isDate(INVITE.date) ? shortDate(INVITE.date) : field(INVITE.date)],
-          isDate(INVITE.date) ? [formatDate(INVITE.date, { weekday: "long" })] : null
-        )
-      ),
-      renderEventActions(event)
-    );
-  }
-
   function renderInvitation() {
     return el("header", {},
       el("img", { class: "logo", src: "assets/rings.svg", alt: "", width: "96", height: "72" }),
+      el("figure", { class: "verse" },
+        el("blockquote", {}, `“${INVITE.verse.text}”`),
+        el("figcaption", {}, INVITE.verse.reference)
+      ),
       el("p", { class: "blessing" }, INVITE.blessing),
       el("h1", { class: "ceremony-title" }, "Betrothal Ceremony"),
       el("div", { class: "heart-rule" },
@@ -202,17 +189,11 @@
         el("p", { class: "joiner" }, "&"),
         renderFamily(INVITE.groomSide, "son of")
       ),
-      el("p", { class: "invite-line invite-closing" }, "as they begin a beautiful new chapter together"),
-      renderBetrothalDetails(INVITE.events[0])
+      el("p", { class: "invite-line invite-closing" }, "as they begin a beautiful new chapter together")
     );
   }
 
   // Events
-
-  function eventTime(event) {
-    if (isTBD(event.start)) return field(event.start);
-    return formatTime(event.start);
-  }
 
   function renderCalendar(event) {
     const icsButton = el("button", { type: "button", class: "action" }, "Apple / Other");
@@ -226,40 +207,42 @@
     );
   }
 
-  function renderEventActions(event) {
-    const actions = el("div", { class: "event-actions" });
-    if (!isTBD(event.mapsUrl)) {
-      actions.append(el("a", { class: "action", href: event.mapsUrl, target: "_blank", rel: "noopener" }, "Directions"));
-    }
-    if (isDate(INVITE.date) && isTime(event.start) && isTime(event.end) && !isTBD(event.venue) && !isTBD(event.address)) {
-      actions.append(renderCalendar(event));
-    }
-    return actions;
-  }
-
-  function renderEvent(event) {
-    return el("section", {},
+  function renderEvent(event, timeNote) {
+    const canAddToCalendar = isDate(INVITE.date) && isTime(event.start) && isTime(event.end) && !isTBD(event.venue) && !isTBD(event.address);
+    return el("section", { class: "event" },
       el("h2", { class: "event-title" }, event.title),
-      el("p", { class: "event-time" }, eventTime(event)),
-      el("p", { class: "event-date" }, isDate(INVITE.date) ? `${formatDate(INVITE.date, { weekday: "long" })}, ${shortDate(INVITE.date)}` : field(INVITE.date)),
-      el("p", { class: "event-venue" }, field(event.venue)),
-      el("p", { class: "event-address" }, field(event.address)),
-      renderEventActions(event)
+      el("div", { class: "details" },
+        renderDetail("location", "Location", [field(event.venue)], [field(event.address)]),
+        renderDetail("time", "Time",
+          [isTime(event.start) ? formatTime(event.start) : field(event.start)],
+          timeNote ? [timeNote] : null
+        ),
+        renderDetail("date", "Date",
+          [isDate(INVITE.date) ? shortDate(INVITE.date) : field(INVITE.date)],
+          isDate(INVITE.date) ? [formatDate(INVITE.date, { weekday: "long" })] : null
+        )
+      ),
+      el("div", { class: "event-actions" },
+        isTBD(event.mapsUrl) ? "" : el("a", { class: "action", href: event.mapsUrl, target: "_blank", rel: "noopener" }, "Directions"),
+        canAddToCalendar ? renderCalendar(event) : ""
+      )
     );
   }
 
-  // The betrothal's details sit in the invitation, so only the reception gets a section here.
   function renderDetails() {
-    const reception = INVITE.events.find((event) => event.id === "reception");
+    const [betrothal, reception] = INVITE.events;
     return el("div", {},
+      el("img", { class: "divider", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
+      renderEvent(betrothal, `during the ${INVITE.liturgyTerm}`),
+      el("img", { class: "divider divider-flipped", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
+      renderEvent(reception),
       el("div", { class: "with-love" },
         el("img", { class: "divider", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
         el("p", { class: "with-love-title" }, "With love"),
         el("img", { class: "with-love-heart", src: "assets/heart.svg", alt: "", width: "22", height: "16" }),
         el("p", { class: "with-love-names" }, field(INVITE.withLove)),
         el("img", { class: "divider divider-flipped", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" })
-      ),
-      renderEvent(reception)
+      )
     );
   }
 
