@@ -22,7 +22,7 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Audience | Everyone is invited to both events |
 | RSVP | One answer and one headcount covering both events |
 | RSVP fields | Name, phone number, attendance, headcount |
-| Headcount | 1 to 6, including the guest |
+| Headcount | At least 1, including the guest, with no upper limit |
 | Reply date | Soft "kindly respond by" date; the form never closes |
 | RSVP storage | Google Sheet in Joseph's account, shared with the cousin |
 | Visual style | Ivory and antique gold, typography plus one fine-line illustration |
@@ -111,8 +111,7 @@ Will you be able to join us for the betrothal and reception?
 ( ) Regretfully, no
 
 Including yourself, how many will be attending?
-[ - ]  1  [ + ]
-If you are more than 6, please send a second response.
+[ - ] [ 1 ] [ + ]
 
 [ Send my response ]
 ```
@@ -192,7 +191,7 @@ Times are 24-hour IST. Any value starting with `[TBD` shows on the page as a das
 
 - Name is required, 2 to 80 characters.
 - Attendance is required, with neither option preselected.
-- Headcount appears only after "Joyfully, yes". It uses a stepper from 1 to 6 and starts at 1, so nobody over-reports by accident.
+- Headcount appears only after "Joyfully, yes". It starts at 1, with `+` and `-` buttons and a box to type the number for large groups, and has no set upper limit. The box takes up to 4 digits, only to guard against mistyping.
 - "Regretfully, no" stores a headcount of 0.
 - The button shows "Sending..." and is disabled while the reply is in flight, which prevents double submits. Apps Script can take a few seconds to respond.
 - On failure or after a 15-second timeout, the entries stay in place and a message asks the guest to try again.
@@ -211,7 +210,7 @@ Sending as `text/plain` avoids a CORS preflight, which Apps Script can't answer.
 `Code.gs` `doPost` does the following:
 
 1. Parse the JSON and check the honeypot.
-2. Validate on the server: name length, phone number (7 to 15 digits, with an optional leading `+`), `attending` is yes or no, `guests` is 1 to 6 for yes and forced to 0 for no. The phone number is stored as digits only, keeping any leading `+`.
+2. Validate on the server: name length, phone number (7 to 15 digits, with an optional leading `+`), `attending` is yes or no, `guests` is a whole number of at least 1 for yes and forced to 0 for no. The phone number is stored as digits only, keeping any leading `+`.
 3. Prefix any name starting with `=`, `+`, `-` or `@` with an apostrophe, so it can't run as a spreadsheet formula.
 4. Take `LockService`, append the row, release the lock.
 5. Return `{ "ok": true }` or `{ "ok": false, "error": "..." }`.
@@ -233,7 +232,7 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 - Total guests attending. This is the number for the caterer.
 - Yes replies, No replies, and repeated names and phone numbers to review.
 
-**Why duplicates aren't merged automatically:** two guests may share a name, and a family may share a phone or send a second response for a large group. Replacing rows could silently delete a real guest, so the family reviews highlighted rows and ticks `Ignore` instead.
+**Why duplicates aren't merged automatically:** two guests may share a name, and a family may share a phone. Replacing rows could silently delete a real guest, so the family reviews highlighted rows and ticks `Ignore` instead.
 
 ### Known limits of these choices
 
@@ -312,7 +311,7 @@ To update the script later, use **Manage deployments > Edit > New version**. Cre
 - [ ] No `[TBD]` left in `content.js`
 - [ ] Layout holds at 360px, 390px and desktop, with no sideways scrolling
 - [ ] Yes and No replies each create a correct row, and the Summary totals are right
-- [ ] Tampered requests are rejected: headcount of 7, formula-style name, filled honeypot
+- [ ] Tampered requests are rejected: headcount of 0, formula-style name, filled honeypot
 - [ ] Failed sends keep the entered values and allow a retry
 - [ ] Both Maps links open the correct location
 - [ ] Calendar entries show the correct time in IST, on iPhone and Android

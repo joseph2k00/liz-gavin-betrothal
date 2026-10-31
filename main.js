@@ -3,7 +3,6 @@
 
   const INVITE = window.INVITE;
   const STORAGE_KEY = "liz-gawin-rsvp";
-  const MAX_GUESTS = 6;
   const SEND_TIMEOUT_MS = 15000;
   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
   const COUPLE = `${INVITE.brideSide.child} & ${INVITE.groomSide.child}`;
@@ -322,20 +321,32 @@
 
       const minus = el("button", { type: "button", "aria-label": "One fewer guest" }, "\u2212");
       const plus = el("button", { type: "button", "aria-label": "One more guest" }, "+");
-      const count = el("output", { "aria-live": "polite" });
+      // maxlength only guards against a mistyped run of digits.
+      const count = el("input", {
+        type: "text", inputmode: "numeric", maxlength: "4", autocomplete: "off",
+        "aria-labelledby": "rsvp-guests-label", "aria-describedby": "rsvp-guests-error",
+      });
+      const guestsError = el("p", { class: "error", id: "rsvp-guests-error", hidden: true });
       const guestsField = el("div", { class: "field", role: "group", "aria-labelledby": "rsvp-guests-label", hidden: true },
         el("p", { class: "parents", id: "rsvp-guests-label" }, "Including yourself, how many will be attending?"),
         el("div", { class: "stepper", style: "margin-top:8px" }, minus, count, plus),
-        el("p", { class: "hint" }, `If you are more than ${MAX_GUESTS}, please send a second response.`)
+        guestsError
       );
 
       function updateGuests() {
-        count.textContent = String(guests);
+        count.value = String(guests);
         minus.disabled = guests <= 1;
-        plus.disabled = guests >= MAX_GUESTS;
+        guestsError.hidden = true;
       }
       minus.addEventListener("click", () => { guests -= 1; updateGuests(); });
       plus.addEventListener("click", () => { guests += 1; updateGuests(); });
+      // While typing, a blank or 0 stays as typed and counts as 0 until corrected.
+      count.addEventListener("input", () => {
+        count.value = count.value.replace(/\D/g, "");
+        guests = Number(count.value);
+        minus.disabled = guests <= 1;
+        guestsError.hidden = true;
+      });
       updateGuests();
 
       const website = el("input", { type: "text", name: "website", tabindex: "-1", autocomplete: "off" });
@@ -397,6 +408,12 @@
         if (!nameValid) { nameInput.focus(); return; }
         if (!phoneValid) { phoneInput.focus(); return; }
         if (!attending) { yes.focus(); return; }
+        if (attending === "yes" && guests < 1) {
+          guestsError.textContent = "Please enter how many will be attending.";
+          guestsError.hidden = false;
+          count.focus();
+          return;
+        }
 
         submit.disabled = true;
         submit.textContent = "Sending...";

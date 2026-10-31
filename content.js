@@ -40,5 +40,5 @@ window.INVITE = {
   ],
   withLove: "Rose Tom, Jose Tom and Aiwin Paul",
   closing: "With love and prayers",
-  rsvpEndpoint: "[TBD: Apps Script web app URL]",
+  rsvpEndpoint: "https://script.google.com/macros/s/AKfycbxP5L0tmQHkK3shVZ7NooUfuYUXBVhtMC7MgSfSPOQOaFLyaWfb7S4XCh0QcWGMZVEP/exec",
 };

@@ -6,7 +6,6 @@
 
 var RESPONSES_TAB = "Responses";
 var SUMMARY_TAB = "Summary";
-var MAX_GUESTS = 6;
 
 function doPost(e) {
   var data;
@@ -67,8 +66,8 @@ function validate_(data) {
   var guests = 0;
   if (data.attending === "yes") {
     guests = data.guests;
-    if (typeof guests !== "number" || guests % 1 !== 0 || guests < 1 || guests > MAX_GUESTS) {
-      return { error: "Guests must be 1 to " + MAX_GUESTS };
+    if (typeof guests !== "number" || guests % 1 !== 0 || guests < 1) {
+      return { error: "Guests must be at least 1" };
     }
   }
 
