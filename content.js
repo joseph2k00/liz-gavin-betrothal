@@ -8,7 +8,7 @@ window.INVITE = {
     home: "Kizhakkepullenkannapallil, Nambiyakulam",
   },
   groomSide: {
-    child: "Gavin Paul",
+    child: "Gawin Paul",
     parents: "[TBD: Mr. Father & Mrs. Mother Family]",
     home: "[TBD: House, Town]",
   },

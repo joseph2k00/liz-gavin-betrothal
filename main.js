@@ -2,7 +2,7 @@
   "use strict";
 
   const INVITE = window.INVITE;
-  const STORAGE_KEY = "liz-gavin-rsvp";
+  const STORAGE_KEY = "liz-gawin-rsvp";
   const MAX_GUESTS = 6;
   const SEND_TIMEOUT_MS = 15000;
   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
@@ -124,10 +124,10 @@
     const lines = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//Liz and Gavin//Betrothal Invite//EN",
+      "PRODID:-//Liz and Gawin//Betrothal Invite//EN",
       "CALSCALE:GREGORIAN",
       "BEGIN:VEVENT",
-      `UID:${event.id}-${INVITE.date}@liz-gavin-betrothal`,
+      `UID:${event.id}-${INVITE.date}@liz-gawin-betrothal`,
       `DTSTAMP:${utcStamp(Date.now())}`,
       `DTSTART:${times.start}`,
       `DTEND:${times.end}`,

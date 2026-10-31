@@ -1,4 +1,4 @@
-# Liz & Gavin Betrothal Invite: Architecture
+# Liz & Gawin Betrothal Invite: Architecture
 
 ## 1. Summary
 
@@ -28,11 +28,11 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Visual style | Ivory and antique gold, typography plus one fine-line illustration |
 | Opening | Straight to the invite with a gentle fade; no envelope or tap |
 | Extras | Google Maps link and Add to Calendar per event |
-| Address | Free subdomain, e.g. `liz-gavin.vercel.app`, if available |
+| Address | Free subdomain, e.g. `liz-gawin.vercel.app`, if available |
 
 ### Assumptions to confirm with the family
 
-- The couple's first names are Liz and Gavin (taken from the folder name).
+- The couple's first names are Liz and Gawin (taken from the folder name).
 - Liz is the bride, so her parents are listed first.
 - "Holy Qurbana" is the correct term. The church's name says Syro-Malabar, so the site uses this instead of "Holy Mass". This is one field in the content file.
 - All times are in IST (`Asia/Kolkata`).
@@ -69,7 +69,7 @@ Mr. [Father] & Mrs. [Mother] [Family]
 
 &
 
-Gavin Paul
+Gawin Paul
 son of
 Mr. [Father] & Mrs. [Mother] [Family]
 [House], [Town]
@@ -136,7 +136,7 @@ Private Google Sheet  <-- the family reads replies here
 ### Files
 
 ```text
-liz-gavin-betrothal/
+liz-gawin-betrothal/
   ARCHITECTURE.md
   index.html          Page shell, plus static title and social preview tags
   styles.css          Design tokens and layout
@@ -163,7 +163,7 @@ liz-gavin-betrothal/
 window.INVITE = {
   blessing: "By the grace of God Almighty",
   brideSide: { child: "Liz", parents: "[TBD]", home: "[TBD]" },
-  groomSide: { child: "Gavin", parents: "[TBD]", home: "[TBD]" },
+  groomSide: { child: "Gawin", parents: "[TBD]", home: "[TBD]" },
   liturgyTerm: "Holy Mass", // family to confirm: or "Holy Qurbana"
   date: "[TBD: YYYY-MM-DD]",
   replyBy: "[TBD: YYYY-MM-DD]",
@@ -275,7 +275,7 @@ These need Joseph's own logins:
 1. Create the Sheet in his Google account and share it with the cousin.
 2. In the Sheet, open **Extensions > Apps Script**, paste in `apps-script/Code.gs`, and run `setupSheet` once. This creates the `Responses` and `Summary` tabs.
 3. Deploy the script as a web app: **Execute as: Me**, **Who has access: Anyone**. Copy the URL into `rsvpEndpoint` in `content.js`.
-4. Log in to Vercel and deploy. If `liz-gavin.vercel.app` is taken, update the `og:url` and `og:image` tags in `index.html`.
+4. Log in to Vercel and deploy. If `liz-gawin.vercel.app` is taken, update the `og:url` and `og:image` tags in `index.html`.
 
 To update the script later, use **Manage deployments > Edit > New version**. Creating a new deployment changes the URL and breaks the form.
 
