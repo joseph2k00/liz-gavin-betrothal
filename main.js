@@ -292,7 +292,7 @@
       again.addEventListener("click", () => showForm(reply));
       section.replaceChildren(heading, el("div", { class: "confirmation" },
         title,
-        el("p", { class: "hint" }, "Need to change your reply? Simply send a new one using the same name."),
+        el("p", { class: "hint" }, "Need to change your reply? Simply send a new one using the same phone number."),
         again
       ));
       if (moveFocus) title.focus();

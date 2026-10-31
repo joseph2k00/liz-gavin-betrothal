@@ -118,7 +118,7 @@ Including yourself, how many will be attending?
 
 - **Yes:** "Thank you, [Name]. We look forward to celebrating with you."
 - **No:** "Thank you for letting us know, [Name]. You will be in our prayers."
-- **Both:** "Need to change your reply? Simply send a new one using the same name."
+- **Both:** "Need to change your reply? Simply send a new one using the same phone number."
 
 ## 5. Technical architecture
 
@@ -212,7 +212,7 @@ Sending as `text/plain` avoids a CORS preflight, which Apps Script can't answer.
 1. Parse the JSON and check the honeypot.
 2. Validate on the server: name length, phone number (7 to 15 digits, with an optional leading `+`), `attending` is yes or no, `guests` is a whole number of at least 1 for yes and forced to 0 for no. The phone number is stored as digits only, keeping any leading `+`.
 3. Prefix any name starting with `=`, `+`, `-` or `@` with an apostrophe, so it can't run as a spreadsheet formula.
-4. Take `LockService`, append the row, release the lock.
+4. Take `LockService`, then update the row with the same phone number or add a new one, and release the lock. Numbers match on their last 10 digits, so a country code or leading 0 doesn't matter.
 5. Return `{ "ok": true }` or `{ "ok": false, "error": "..." }`.
 
 There is no `doGet` that returns data, so the public URL can only add replies and can't read them.
@@ -224,21 +224,22 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 | Timestamp | Name | Phone | Attending | Guests | Ignore |
 |---|---|---|---|---|---|
 
-- `Ignore` is a checkbox the family ticks on an outdated or duplicate reply.
-- Conditional formatting highlights repeated names and phone numbers.
+- Each phone number has one row. A new reply from that number replaces it and clears `Ignore`.
+- `Ignore` is a checkbox the family can tick to leave a row out of the totals.
+- Conditional formatting highlights repeated names, which may be one guest using two numbers.
 
 **`Summary` tab** (formulas, excluding ignored rows)
 
 - Total guests attending. This is the number for the caterer.
-- Yes replies, No replies, and repeated names and phone numbers to review.
+- Yes replies, No replies, and repeated names to review.
 
-**Why duplicates aren't merged automatically:** two guests may share a name, and a family may share a phone. Replacing rows could silently delete a real guest, so the family reviews highlighted rows and ticks `Ignore` instead.
+**Phone number as the unique key:** a phone number identifies a reply, because two guests may share a name. As a result, if two households reply using one shared number, the second reply replaces the first. Each reply should therefore include everyone it covers.
 
 ### Known limits of these choices
 
 - One answer covers both events, so someone attending only the betrothal still counts toward the reception total.
 - Anyone with the link can reply, and the honeypot only stops simple bots. The family should skim for unfamiliar names.
-- There is no contact number on the page, so changes rely on the guest re-submitting or calling the family directly.
+- There is no contact number on the page, so changes rely on the guest sending a new reply with the same number or calling the family directly.
 
 ## 7. Design system
 

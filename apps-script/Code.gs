@@ -29,9 +29,10 @@ function doPost(e) {
   try {
     lock.waitLock(10000);
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(RESPONSES_TAB);
-    var row = sheet.getLastRow() + 1;
+    // Each phone number has one row, so a new reply replaces that number's earlier one.
+    var row = findRowByPhone_(sheet, reply.phone) || sheet.getLastRow() + 1;
     sheet.getRange(row, 1, 1, 5).setValues([[new Date(), reply.name, reply.phone, reply.attending, reply.guests]]);
-    sheet.getRange(row, 6).insertCheckboxes();
+    sheet.getRange(row, 6).insertCheckboxes().setValue(false);
   } catch (error) {
     return respond_({ ok: false, error: "Could not save the response" });
   } finally {
@@ -39,6 +40,26 @@ function doPost(e) {
   }
 
   return respond_({ ok: true });
+}
+
+function findRowByPhone_(sheet, phone) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return 0;
+  }
+  var key = phoneKey_(phone);
+  var phones = sheet.getRange(2, 3, lastRow - 1, 1).getValues();
+  for (var i = 0; i < phones.length; i++) {
+    if (phoneKey_(phones[i][0]) === key) {
+      return i + 2;
+    }
+  }
+  return 0;
+}
+
+// Matches on the last 10 digits, so +91 98765 43210 and 098765 43210 are the same number.
+function phoneKey_(phone) {
+  return String(phone).replace(/\D/g, "").slice(-10);
 }
 
 function validate_(data) {
@@ -56,7 +77,7 @@ function validate_(data) {
   if (phoneDigits.length < 7 || phoneDigits.length > 15) {
     return { error: "A valid phone number is required" };
   }
-  // Stored in one format, so the same number typed differently still shows as a repeat.
+  // Stored in one format, so the Phone column stays tidy.
   var phone = (data.phone.trim().charAt(0) === "+" ? "+" : "") + phoneDigits;
 
   if (data.attending !== "yes" && data.attending !== "no") {
@@ -97,21 +118,21 @@ function setupSheet() {
   responses.setColumnWidth(2, 240);
   responses.setColumnWidth(3, 150);
 
-  // Highlights repeated names or numbers so the family can tick Ignore on an outdated reply.
+  // Highlights repeated names, which may be the same guest using two different numbers.
   var repeated = SpreadsheetApp.newConditionalFormatRule()
-    .whenFormulaSatisfied('=OR(AND($B2<>"",COUNTIF($B$2:$B,$B2)>1),AND($C2<>"",COUNTIF($C$2:$C,$C2)>1))')
+    .whenFormulaSatisfied('=AND($B2<>"",COUNTIF($B$2:$B,$B2)>1)')
     .setBackground("#F6E7B8")
     .setRanges([responses.getRange("A2:F")])
     .build();
   responses.setConditionalFormatRules([repeated]);
 
   var summary = ss.getSheetByName(SUMMARY_TAB) || ss.insertSheet(SUMMARY_TAB);
-  summary.getRange(1, 1, 5, 2).setValues([
+  summary.clear();
+  summary.getRange(1, 1, 4, 2).setValues([
     ["Total guests attending", '=SUMIFS(Responses!E2:E,Responses!D2:D,"Yes",Responses!F2:F,FALSE)'],
     ["Yes replies", '=COUNTIFS(Responses!D2:D,"Yes",Responses!F2:F,FALSE)'],
     ["No replies", '=COUNTIFS(Responses!D2:D,"No",Responses!F2:F,FALSE)'],
     ["Replies with a repeated name to review", '=SUMPRODUCT((Responses!B2:B<>"")*(Responses!F2:F=FALSE)*(COUNTIFS(Responses!B2:B,Responses!B2:B,Responses!F2:F,FALSE)>1))'],
-    ["Replies with a repeated phone number to review", '=SUMPRODUCT((Responses!C2:C<>"")*(Responses!F2:F=FALSE)*(COUNTIFS(Responses!C2:C,Responses!C2:C,Responses!F2:F,FALSE)>1))'],
   ]);
   summary.getRange("A1:B1").setFontWeight("bold");
   summary.setColumnWidth(1, 340);
