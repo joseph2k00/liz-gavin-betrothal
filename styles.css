@@ -1,0 +1,540 @@
+:root {
+  color-scheme: light;
+
+  --bg: #FAF6EE;          /* warm ivory */
+  --text: #2B2622;        /* deep charcoal */
+  --muted: #5F564D;
+  --accent: #A5843F;      /* antique gold: decoration and large text only */
+  --accent-text: #7F6329; /* darker gold: small text, links, buttons */
+  --submit-hover: #5F4A1F;
+  --error: #9A2B20;
+  --line: rgba(165, 132, 63, 0.45);
+
+  --script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", cursive;
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans: "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden; /* with the clip on body, the moving art can't widen the page */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+body {
+  position: relative;
+  overflow-x: clip;
+}
+
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 104px 20px 120px;
+  text-align: center;
+  animation: fade-in 900ms ease-out both;
+}
+
+/* Olive decoration. Phones and tablets get a small sprig in each corner. */
+body::before,
+body::after,
+main::before,
+main::after {
+  content: "";
+  position: absolute;
+  width: 112px;
+  height: 96px;
+  background: url("assets/corner-sprig.svg") left top / contain no-repeat;
+  pointer-events: none;
+  animation: sway 7s ease-in-out infinite alternate;
+}
+
+main::before { top: 0; left: 0; --flip: scale(1, 1); }
+main::after { top: 0; right: 0; --flip: scale(-1, 1); }
+/* The inset keeps the moving sprigs from adding to the page height. */
+body::before { bottom: 4px; left: 0; --flip: scale(1, -1); }
+body::after { bottom: 4px; right: 0; --flip: scale(-1, -1); }
+
+@keyframes sway {
+  from { transform: var(--flip) skew(-1.2deg, -1.2deg); }
+  to { transform: var(--flip) skew(1.2deg, 1.2deg); }
+}
+
+@keyframes sway-vine {
+  from { transform: var(--flip) translateX(-3px) skewX(-0.3deg); }
+  to { transform: var(--flip) translateX(3px) skewX(0.3deg); }
+}
+
+/* With room beside the text, tall vines climb both sides of the page instead. */
+@media (min-width: 900px) {
+  main {
+    padding: 64px 20px 72px;
+  }
+
+  main::before,
+  main::after {
+    display: none;
+  }
+
+  body::before,
+  body::after {
+    --vine-width: min(calc((100vw - 560px) / 2 - 12px), 340px);
+    top: 0;
+    bottom: 0;
+    width: var(--vine-width);
+    height: auto;
+    background: url("assets/vine.svg") left top / 100% auto repeat-y;
+    opacity: 0.8;
+    animation: sway-vine 8s ease-in-out infinite alternate;
+  }
+
+  body::before { left: 0; --flip: scale(1, 1); }
+  body::after { right: 0; --flip: scale(-1, 1); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main { animation: none; }
+
+  body::before,
+  body::after,
+  main::before,
+  main::after {
+    animation: none;
+    transform: var(--flip);
+  }
+}
+
+p,
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Missing details stay visible so they can't be overlooked before launch. */
+.tbd {
+  padding: 0 4px;
+  border: 1px dashed var(--error);
+  color: var(--error);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.noscript {
+  padding: 40px 0;
+}
+
+/* Invitation */
+
+.blessing {
+  color: var(--accent-text);
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.families {
+  margin-top: 40px;
+}
+
+.parents {
+  font-weight: 600;
+}
+
+.home {
+  color: var(--muted);
+}
+
+.parents-of {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.child {
+  color: var(--accent-text);
+  font-family: var(--script);
+  font-size: 58px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.joiner {
+  margin: 24px 0;
+  color: var(--accent-text);
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+}
+
+.request {
+  margin-top: 36px;
+}
+
+.request .venue-line {
+  font-weight: 600;
+}
+
+.request-group + .request-group {
+  margin-top: 20px;
+}
+
+.divider {
+  display: block;
+  width: 168px;
+  height: auto;
+  margin: 44px auto;
+}
+
+/* Events */
+
+.date {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-variant-numeric: lining-nums; /* the default 1 in this font reads as a capital I */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.event {
+  margin-top: 36px;
+  padding-top: 36px;
+  border-top: 1px solid var(--line);
+}
+
+.event-title {
+  color: var(--accent-text);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.event-time {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.event-venue {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.event-address {
+  color: var(--muted);
+}
+
+.event-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.action,
+.calendar > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 20px;
+  border: 1px solid var(--accent-text);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--accent-text);
+  font: 600 16px/1.3 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.calendar > summary {
+  list-style: none;
+}
+
+.calendar > summary::-webkit-details-marker {
+  display: none;
+}
+
+.calendar[open] {
+  flex-basis: 100%;
+}
+
+.calendar-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* RSVP */
+
+.rsvp {
+  margin-top: 44px;
+  padding-top: 44px;
+  border-top: 1px solid var(--line);
+}
+
+.rsvp h2 {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.reply-by {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.rsvp form {
+  margin-top: 32px;
+  text-align: left;
+}
+
+.field {
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+}
+
+.field > label:not(.choice),
+.field > legend {
+  display: block;
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+input[type="text"] {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 1px solid var(--muted);
+  border-radius: 2px;
+  background: #FFFDF9;
+  color: var(--text);
+  font: 400 18px/1.3 var(--sans);
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: #FFFDF9;
+  cursor: pointer;
+}
+
+.choice + .choice {
+  margin-top: 10px;
+}
+
+.choice:has(input:checked) {
+  border-color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--accent-text);
+}
+
+.choice input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--accent-text);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepper button {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--accent-text);
+  border-radius: 2px;
+  background: #FFFDF9;
+  color: var(--accent-text);
+  font: 600 24px/1 var(--sans);
+  cursor: pointer;
+}
+
+.stepper button:disabled {
+  border-color: var(--line);
+  color: var(--line);
+  cursor: default;
+}
+
+.stepper output {
+  min-width: 56px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
+.hint {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.error {
+  margin-top: 8px;
+  color: var(--error);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Hidden from people; only simple bots fill this in. */
+.website {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.submit {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--accent-text);
+  color: #FFFDF9;
+  font: 600 18px/1.3 var(--sans);
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.send-error {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.confirmation {
+  margin-top: 24px;
+}
+
+.confirmation h3 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.confirmation h3:focus {
+  outline: none;
+}
+
+.confirmation .hint {
+  margin-top: 20px;
+}
+
+.confirmation .action {
+  margin-top: 16px;
+}
+
+.closing {
+  margin-top: 56px;
+  color: var(--accent-text);
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+}
+
+/* Hover and press feedback. Hover is limited to mouse devices so it can't stick after a tap. */
+
+.action,
+.calendar > summary,
+.stepper button,
+.submit,
+.choice {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.action:active,
+.calendar > summary:active,
+.stepper button:not(:disabled):active {
+  background: var(--accent-text);
+  color: #FFFDF9;
+}
+
+.submit:not(:disabled):active {
+  background: var(--submit-hover);
+}
+
+@media (hover: hover) {
+  .action:hover,
+  .calendar > summary:hover,
+  .stepper button:not(:disabled):hover {
+    background: var(--accent-text);
+    color: #FFFDF9;
+  }
+
+  .submit:not(:disabled):hover {
+    background: var(--submit-hover);
+  }
+
+  .choice:hover {
+    border-color: var(--accent-text);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action,
+  .calendar > summary,
+  .stepper button,
+  .submit,
+  .choice {
+    transition: none;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 48" width="168" height="48" fill="none" stroke="#A5843F" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M6 26 C 44 30, 124 30, 162 22"/>
+  <g id="leaves">
+    <path d="M28 28 C 30 19, 38 13, 47 12 C 46 21, 38 27, 28 28 Z"/>
+    <path d="M28 28 L 47 12" stroke-width="0.6"/>
+    <path d="M42 29 C 47 34, 54 38, 62 37 C 59 31, 51 27, 42 29 Z"/>
+    <path d="M42 29 L 62 37" stroke-width="0.6"/>
+    <path d="M62 29 C 65 20, 73 14, 82 14 C 80 23, 72 29, 62 29 Z"/>
+    <path d="M62 29 L 82 14" stroke-width="0.6"/>
+    <path d="M78 30 C 83 35, 90 39, 98 37 C 95 31, 87 28, 78 30 Z"/>
+    <path d="M78 30 L 98 37" stroke-width="0.6"/>
+    <path d="M97 29 C 100 20, 108 14, 117 13 C 116 22, 107 28, 97 29 Z"/>
+    <path d="M97 29 L 117 13" stroke-width="0.6"/>
+    <path d="M113 28 C 118 33, 125 36, 133 34 C 130 28, 122 25, 113 28 Z"/>
+    <path d="M113 28 L 133 34" stroke-width="0.6"/>
+    <path d="M131 26 C 134 18, 141 13, 150 12 C 148 20, 141 25, 131 26 Z"/>
+    <path d="M131 26 L 150 12" stroke-width="0.6"/>
+  </g>
+  <ellipse cx="20" cy="33" rx="3.5" ry="4.5"/>
+  <path d="M20 28.5 L 22 27"/>
+</svg>

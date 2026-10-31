@@ -1,0 +1,9 @@
+# Link preview bots are allowed so the invite still previews in WhatsApp.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: *
+Disallow: /
