@@ -9,17 +9,18 @@ window.INVITE = {
   },
   groomSide: {
     child: "Gawin Paul",
-    parents: "[TBD: Mr. Father & Mrs. Mother Family]",
-    home: "[TBD: House, Town]",
+    parents: "Mr. Paul P D & Mrs. Lizy Paul",
+    home: "Payyapilly",
   },
   verse: { text: "I have found the one whom my soul loves", reference: "Song of Solomon 3:4" },
   liturgyTerm: "Holy Qurbana", // the church is Syro-Malabar; family to confirm
   date: "2026-12-26",
-  replyBy: "[TBD: YYYY-MM-DD]",
+  replyBy: "2026-11-25",
   events: [
     {
       id: "betrothal",
-      title: "Betrothal",
+      title: "Betrothal", // still used for calendar entries
+      heading: "Join us at...",
       start: "11:00",
       end: "[TBD: HH:MM]",
       venue: "St. Thomas Mount Syro Malabar Catholic Church",
@@ -28,7 +29,8 @@ window.INVITE = {
     },
     {
       id: "reception",
-      title: "Reception",
+      title: "Reception", // still used for calendar entries
+      heading: "And for the reception...",
       start: "18:00",
       end: "[TBD: HH:MM]",
       venue: "Marian Convention Centre",

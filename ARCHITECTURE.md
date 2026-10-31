@@ -21,7 +21,7 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Schedule | Both events on the same day, at different venues |
 | Audience | Everyone is invited to both events |
 | RSVP | One answer and one headcount covering both events |
-| RSVP fields | Name, attendance, headcount (no phone) |
+| RSVP fields | Name, phone number, attendance, headcount |
 | Headcount | 1 to 6, including the guest |
 | Reply date | Soft "kindly respond by" date; the form never closes |
 | RSVP storage | Google Sheet in Joseph's account, shared with the cousin |
@@ -45,8 +45,8 @@ One scrolling page, in this order:
 2. **Blessing line**
 3. **"Betrothal Ceremony" heading**, underlined with a gold rule that has a heart in the middle
 4. **Invitation wording**, with both sets of parents and the couple's names
-5. **Event: Betrothal**, between two mirrored olive branches: illustrated location, time and date sections, then Directions and Add to Calendar
-6. **Event: Reception**: the same three sections, then Directions and Add to Calendar
+5. **Event: Betrothal**, headed "Join us at...", between two mirrored olive branches: illustrated location, time and date sections, then Directions and Add to Calendar
+6. **Event: Reception**, headed "And for the reception...": the same three sections, then Directions and Add to Calendar
 7. **"With love" message**: Rose Tom, Jose Tom and Aiwin Paul, with a small heart, between two mirrored olive branches
 8. **RSVP form**
 9. **Short closing line**, e.g. "With love and prayers"
@@ -101,6 +101,9 @@ Kindly let us know if you can join us
 Kindly respond by [Date]
 
 Your name
+[                    ]
+
+Phone number
 [                    ]
 
 Will you be able to join us for the betrothal and reception?
@@ -198,7 +201,7 @@ Times are 24-hour IST. Any value starting with `[TBD` shows on the page as a das
 ### Request and validation
 
 ```json
-{ "name": "Thomas Kurian", "attending": "yes", "guests": 4, "website": "" }
+{ "name": "Thomas Kurian", "phone": "+91 98765 43210", "attending": "yes", "guests": 4, "website": "" }
 ```
 
 `website` is a hidden honeypot field. Any reply that fills it in is dropped without an error.
@@ -208,7 +211,7 @@ Sending as `text/plain` avoids a CORS preflight, which Apps Script can't answer.
 `Code.gs` `doPost` does the following:
 
 1. Parse the JSON and check the honeypot.
-2. Validate on the server: name length, `attending` is yes or no, `guests` is 1 to 6 for yes and forced to 0 for no.
+2. Validate on the server: name length, phone number (7 to 15 digits, with an optional leading `+`), `attending` is yes or no, `guests` is 1 to 6 for yes and forced to 0 for no. The phone number is stored as digits only, keeping any leading `+`.
 3. Prefix any name starting with `=`, `+`, `-` or `@` with an apostrophe, so it can't run as a spreadsheet formula.
 4. Take `LockService`, append the row, release the lock.
 5. Return `{ "ok": true }` or `{ "ok": false, "error": "..." }`.
@@ -219,18 +222,18 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 
 **`Responses` tab**
 
-| Timestamp | Name | Attending | Guests | Ignore |
-|---|---|---|---|---|
+| Timestamp | Name | Phone | Attending | Guests | Ignore |
+|---|---|---|---|---|---|
 
 - `Ignore` is a checkbox the family ticks on an outdated or duplicate reply.
-- Conditional formatting highlights repeated names.
+- Conditional formatting highlights repeated names and phone numbers.
 
 **`Summary` tab** (formulas, excluding ignored rows)
 
 - Total guests attending. This is the number for the caterer.
-- Yes replies, No replies, and repeated names to review.
+- Yes replies, No replies, and repeated names and phone numbers to review.
 
-**Why duplicates aren't merged automatically:** with no phone number, name is the only identifier, and two guests in a family may share one. Replacing rows by name could silently delete a real guest. The family reviews highlighted names and ticks `Ignore` instead.
+**Why duplicates aren't merged automatically:** two guests may share a name, and a family may share a phone or send a second response for a large group. Replacing rows could silently delete a real guest, so the family reviews highlighted rows and ticks `Ignore` instead.
 
 ### Known limits of these choices
 
@@ -268,7 +271,7 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 - **WhatsApp preview:** set `og:title`, `og:description` and an absolute `og:image` URL in `index.html` before the link is first shared, because WhatsApp caches previews.
 - **Search engines:** add `noindex` and a disallow-all `robots.txt`, because the page has family names, home towns and event locations. WhatsApp's preview bots are explicitly allowed, so the link preview still works.
 - **Analytics:** none, and no third-party tracking.
-- **Data:** the Sheet stays private and is shared only with named family members. Replies hold only names and counts.
+- **Data:** the Sheet stays private and is shared only with named family members. Replies hold only names, phone numbers and counts.
 - **Fallback:** the invite details are the most important part, so they stay readable even if the RSVP endpoint is down.
 
 ## 10. Accounts and manual steps

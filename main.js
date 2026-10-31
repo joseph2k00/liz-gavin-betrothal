@@ -210,7 +210,7 @@
   function renderEvent(event, timeNote) {
     const canAddToCalendar = isDate(INVITE.date) && isTime(event.start) && isTime(event.end) && !isTBD(event.venue) && !isTBD(event.address);
     return el("section", { class: "event" },
-      el("h2", { class: "event-title" }, event.title),
+      el("h2", { class: "event-title" }, event.heading || event.title),
       el("div", { class: "details" },
         renderDetail("location", "Location", [field(event.venue)], [field(event.address)]),
         renderDetail("time", "Time",
@@ -281,7 +281,7 @@
     const heading = el("h2", { id: "rsvp-title" }, "Kindly let us know if you can join us");
     const replyBy = el("p", { class: "reply-by" },
       "Kindly respond by ",
-      isDate(INVITE.replyBy) ? shortDate(INVITE.replyBy) : field(INVITE.replyBy)
+      isDate(INVITE.replyBy) ? el("strong", {}, shortDate(INVITE.replyBy)) : field(INVITE.replyBy)
     );
 
     function showConfirmation(reply, moveFocus) {
@@ -290,7 +290,7 @@
         : `Thank you for letting us know, ${reply.name}. You will be in our prayers.`;
       const title = el("h3", { tabindex: "-1" }, message);
       const again = el("button", { type: "button", class: "action" }, "Send a new response");
-      again.addEventListener("click", () => showForm(reply.name));
+      again.addEventListener("click", () => showForm(reply));
       section.replaceChildren(heading, el("div", { class: "confirmation" },
         title,
         el("p", { class: "hint" }, "Need to change your reply? Simply send a new one using the same name."),
@@ -299,15 +299,22 @@
       if (moveFocus) title.focus();
     }
 
-    function showForm(prefillName) {
+    function showForm(prefill) {
       let guests = 1;
 
       const nameInput = el("input", {
         type: "text", id: "rsvp-name", name: "name", autocomplete: "name",
         maxlength: "80", "aria-describedby": "rsvp-name-error",
       });
-      nameInput.value = prefillName || "";
+      nameInput.value = prefill.name || "";
       const nameError = el("p", { class: "error", id: "rsvp-name-error", hidden: true });
+
+      const phoneInput = el("input", {
+        type: "tel", id: "rsvp-phone", name: "phone", autocomplete: "tel", inputmode: "tel",
+        maxlength: "20", "aria-describedby": "rsvp-phone-error",
+      });
+      phoneInput.value = prefill.phone || "";
+      const phoneError = el("p", { class: "error", id: "rsvp-phone-error", hidden: true });
 
       const yes = el("input", { type: "radio", name: "attending", value: "yes" });
       const no = el("input", { type: "radio", name: "attending", value: "no" });
@@ -341,6 +348,11 @@
           nameInput,
           nameError
         ),
+        el("div", { class: "field" },
+          el("label", { for: "rsvp-phone" }, "Phone number"),
+          phoneInput,
+          phoneError
+        ),
         el("fieldset", { class: "field" },
           el("legend", {}, "Will you be able to join us for the betrothal and reception?"),
           el("label", { class: "choice" }, yes, "Joyfully, yes"),
@@ -362,6 +374,7 @@
       yes.addEventListener("change", syncAttending);
       no.addEventListener("change", syncAttending);
       nameInput.addEventListener("input", () => { nameError.hidden = true; });
+      phoneInput.addEventListener("input", () => { phoneError.hidden = true; });
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -369,14 +382,20 @@
 
         const name = nameInput.value.trim().replace(/\s+/g, " ");
         const nameValid = name.length >= 2 && name.length <= 80;
+        const phone = phoneInput.value.trim();
+        const phoneDigits = phone.replace(/\D/g, "");
+        const phoneValid = /^\+?[\d\s()-]+$/.test(phone) && phoneDigits.length >= 7 && phoneDigits.length <= 15;
         const attending = yes.checked ? "yes" : no.checked ? "no" : "";
 
         nameError.hidden = nameValid;
         nameError.textContent = nameValid ? "" : "Please enter your name.";
+        phoneError.hidden = phoneValid;
+        phoneError.textContent = phoneValid ? "" : "Please enter a valid phone number.";
         attendingError.hidden = Boolean(attending);
         attendingError.textContent = attending ? "" : "Please choose one of the options.";
 
         if (!nameValid) { nameInput.focus(); return; }
+        if (!phoneValid) { phoneInput.focus(); return; }
         if (!attending) { yes.focus(); return; }
 
         submit.disabled = true;
@@ -384,11 +403,12 @@
         try {
           await sendReply({
             name,
+            phone,
             attending,
             guests: attending === "yes" ? guests : 0,
             website: website.value,
           });
-          const reply = { name, attending };
+          const reply = { name, phone, attending };
           saveReply(reply);
           showConfirmation(reply, true);
         } catch (error) {
@@ -405,7 +425,7 @@
 
     const saved = readSavedReply();
     if (saved && saved.name && saved.attending) showConfirmation(saved, false);
-    else showForm("");
+    else showForm({});
 
     return section;
   }
