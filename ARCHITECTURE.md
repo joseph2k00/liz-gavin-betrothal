@@ -34,7 +34,6 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 
 - The couple's first names are Liz and Gawin (taken from the folder name).
 - Liz is the bride, so her parents are listed first.
-- "Holy Qurbana" is the correct term. The church's name says Syro-Malabar, so the site uses this instead of "Holy Mass". This is one field in the content file.
 - All times are in IST (`Asia/Kolkata`).
 
 ## 3. Page structure
@@ -80,7 +79,7 @@ Mr. [Father] & Mrs. [Mother] [Family]
 as they begin a beautiful new chapter together
 
 [Pin icon]      Location   [Church], [Town]
-[Clock icon]    Time       [Start time], during the Holy Qurbana
+[Clock icon]    Time       [Start time]
 [Calendar icon] Date       [Date], [Weekday]
 
 Reception
@@ -169,7 +168,6 @@ window.INVITE = {
   blessing: "By the grace of God Almighty",
   brideSide: { child: "Liz", parents: "[TBD]", home: "[TBD]" },
   groomSide: { child: "Gawin", parents: "[TBD]", home: "[TBD]" },
-  liturgyTerm: "Holy Mass", // family to confirm: or "Holy Qurbana"
   date: "[TBD: YYYY-MM-DD]",
   replyBy: "[TBD: YYYY-MM-DD]",
   events: [
@@ -293,7 +291,6 @@ To update the script later, use **Manage deployments > Edit > New version**. Cre
 - [ ] Date, and start and end times for both events
 - [ ] Church name, address, Google Maps pin
 - [ ] Hall name, address, Google Maps pin
-- [ ] "Holy Mass" or "Holy Qurbana"
 - [ ] Reply-by date
 - [ ] Final approval of all wording and spelling by both families
 

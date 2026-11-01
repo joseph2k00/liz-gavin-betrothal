@@ -206,16 +206,13 @@
     );
   }
 
-  function renderEvent(event, timeNote) {
+  function renderEvent(event) {
     const canAddToCalendar = isDate(INVITE.date) && isTime(event.start) && isTime(event.end) && !isTBD(event.venue) && !isTBD(event.address);
     return el("section", { class: "event" },
       el("h2", { class: "event-title" }, event.heading || event.title),
       el("div", { class: "details" },
         renderDetail("location", "Location", [field(event.venue)], [field(event.address)]),
-        renderDetail("time", "Time",
-          [isTime(event.start) ? formatTime(event.start) : field(event.start)],
-          timeNote ? [timeNote] : null
-        ),
+        renderDetail("time", "Time", [isTime(event.start) ? formatTime(event.start) : field(event.start)]),
         renderDetail("date", "Date",
           [isDate(INVITE.date) ? shortDate(INVITE.date) : field(INVITE.date)],
           isDate(INVITE.date) ? [formatDate(INVITE.date, { weekday: "long" })] : null
@@ -232,7 +229,7 @@
     const [betrothal, reception] = INVITE.events;
     return el("div", {},
       el("img", { class: "divider", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
-      renderEvent(betrothal, `during the ${INVITE.liturgyTerm}`),
+      renderEvent(betrothal),
       el("img", { class: "divider divider-flipped", src: "assets/olive-branch.svg", alt: "", width: "168", height: "48" }),
       renderEvent(reception),
       el("div", { class: "with-love" },

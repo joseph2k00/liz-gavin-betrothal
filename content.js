@@ -13,7 +13,6 @@ window.INVITE = {
     home: "Payyapilly",
   },
   verse: { text: "I have found the one whom my soul loves", reference: "Song of Solomon 3:4" },
-  liturgyTerm: "Holy Qurbana", // the church is Syro-Malabar; family to confirm
   date: "2026-12-26",
   replyBy: "2026-11-25",
   events: [
@@ -21,7 +20,7 @@ window.INVITE = {
       id: "betrothal",
       title: "Betrothal", // still used for calendar entries
       heading: "Join us at...",
-      start: "11:00",
+      start: "16:00",
       end: "[TBD: HH:MM]",
       venue: "St. Thomas Mount Syro Malabar Catholic Church",
       address: "Kothanalloor, Kanakkary",
