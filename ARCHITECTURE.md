@@ -28,7 +28,7 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Visual style | Ivory and antique gold, typography plus one fine-line illustration |
 | Opening | Straight to the invite with a gentle fade; no envelope or tap |
 | Extras | Google Maps link and Add to Calendar per event |
-| Address | Free subdomain: `liz-gavin-betrothal.vercel.app` |
+| Address | Free subdomain: `liz-gawin-betrothal.vercel.app` |
 
 ### Assumptions to confirm with the family
 
