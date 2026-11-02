@@ -17,7 +17,7 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Parent naming | Name + house name + home town |
 | Faith touch | Opening blessing line only: "By the grace of God Almighty" |
 | Language | English only |
-| Access | One shared link, no login |
+| Access | Two links, no login: `/` with the RSVP form, and `/invite` without it for close family |
 | Schedule | Both events on the same day, at different venues |
 | Audience | Everyone is invited to both events |
 | RSVP | One answer and one headcount covering both events |
@@ -47,7 +47,7 @@ One scrolling page, in this order:
 5. **Event: Betrothal**, headed "Join us at...", between two mirrored olive branches: illustrated location, time and date sections, then Directions and Add to Calendar
 6. **Event: Reception**, headed "And for the reception...": the same three sections, then Directions and Add to Calendar
 7. **"With love" message**: Rose Tom, Jose Tom and Aiwin Paul, with a small heart, between two mirrored olive branches
-8. **RSVP form**
+8. **RSVP form**, left out on the `/invite` link
 9. **Short closing line**, e.g. "With love and prayers"
 
 ## 4. Wording
@@ -156,6 +156,7 @@ liz-gawin-betrothal/
   apps-script/
     Code.gs           RSVP endpoint, kept here for reference
   robots.txt          Disallow all, except link preview bots
+  vercel.json         Serves the page at /invite as well
   .vercelignore       Keeps this doc and apps-script/ off the live site
 ```
 
@@ -235,6 +236,8 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 
 ### Known limits of these choices
 
+- Close family use the `/invite` link, so they don't appear in the Sheet, and their numbers must be added by hand to the caterer's total.
+- The two links aren't private. A forwarded main link lets someone reply, and removing `/invite` from the address shows the form.
 - One answer covers both events, so someone attending only the betrothal still counts toward the reception total.
 - Anyone with the link can reply, and the honeypot only stops simple bots. The family should skim for unfamiliar names.
 - There is no contact number on the page, so changes rely on the guest sending a new reply with the same number or calling the family directly.

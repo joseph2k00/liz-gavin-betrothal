@@ -444,10 +444,13 @@
     return section;
   }
 
+  // Close family get the /invite link, which is the same page without the RSVP form.
+  const showRsvp = location.pathname.replace(/\/$/, "") !== "/invite";
+
   document.getElementById("invite").replaceChildren(
     renderInvitation(),
     renderDetails(),
-    renderRsvp(),
+    ...(showRsvp ? [renderRsvp()] : []),
     el("p", { class: "closing" }, INVITE.closing)
   );
 })();
