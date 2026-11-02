@@ -418,7 +418,8 @@
           await sendReply({
             name,
             phone,
-            attending,
+            betrothal: attending === "yes",
+            wedding: false, // this site only asks about the betrothal
             guests: attending === "yes" ? guests : 0,
             website: website.value,
           });

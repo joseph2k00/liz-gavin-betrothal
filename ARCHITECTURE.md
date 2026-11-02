@@ -20,11 +20,11 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Access | Two links, no login: `/` with the RSVP form, and `/invite` without it for close family |
 | Schedule | Both events on the same day, at different venues |
 | Audience | Everyone is invited to both events |
-| RSVP | One answer and one headcount covering both events |
+| RSVP | One answer and one headcount covering the betrothal and its reception. Every reply is stored with Wedding as No |
 | RSVP fields | Name, phone number, attendance, headcount |
 | Headcount | At least 1, including the guest, with no upper limit |
 | Reply date | Soft "kindly respond by" date; the form never closes |
-| RSVP storage | Google Sheet in Joseph's account, shared with the cousin |
+| RSVP storage | Google Sheet in Joseph's account, shared with the cousin and with the combined site (`../liz-gawin-wedding-betrothal`) |
 | Visual style | Ivory and antique gold, typography plus one fine-line illustration |
 | Opening | Straight to the invite with a gentle fade; no envelope or tap |
 | Extras | Google Maps link and Add to Calendar per event |
@@ -199,7 +199,7 @@ Times are 24-hour IST. Any value starting with `[TBD` shows on the page as a das
 ### Request and validation
 
 ```json
-{ "name": "Thomas Kurian", "phone": "+91 98765 43210", "attending": "yes", "guests": 4, "website": "" }
+{ "name": "Thomas Kurian", "phone": "+91 98765 43210", "betrothal": true, "wedding": false, "guests": 4, "website": "" }
 ```
 
 `website` is a hidden honeypot field. Any reply that fills it in is dropped without an error.
@@ -209,7 +209,7 @@ Sending as `text/plain` avoids a CORS preflight, which Apps Script can't answer.
 `Code.gs` `doPost` does the following:
 
 1. Parse the JSON and check the honeypot.
-2. Validate on the server: name length, phone number (7 to 15 digits, with an optional leading `+`), `attending` is yes or no, `guests` is a whole number of at least 1 for yes and forced to 0 for no. The phone number is stored as digits only, keeping any leading `+`.
+2. Validate on the server: name length, phone number (7 to 15 digits, with an optional leading `+`), `betrothal` and `wedding` are each true or false, `guests` is a whole number of at least 1 if either is true and forced to 0 otherwise. This site always sends `wedding` as false. The earlier request's `attending` value is still accepted, and leaves `Wedding` blank. The phone number is stored as digits only, keeping any leading `+`.
 3. Prefix any name starting with `=`, `+`, `-` or `@` with an apostrophe, so it can't run as a spreadsheet formula.
 4. Take `LockService`, then update the row with the same phone number or add a new one, and release the lock. Numbers match on their last 10 digits, so a country code or leading 0 doesn't matter.
 5. Return `{ "ok": true }` or `{ "ok": false, "error": "..." }`.
@@ -220,17 +220,18 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 
 **`Responses` tab**
 
-| Timestamp | Name | Phone | Attending | Guests | Ignore |
-|---|---|---|---|---|---|
+| Timestamp | Name | Phone | Betrothal | Wedding | Guests | Ignore |
+|---|---|---|---|---|---|---|
 
 - Each phone number has one row. A new reply from that number replaces it and clears `Ignore`.
+- `Betrothal` and `Wedding` hold Yes or No. This site always stores `Wedding` as No, and only the combined site can store Yes. A blank `Wedding` means the reply came before that column was added.
 - `Ignore` is a checkbox the family can tick to leave a row out of the totals.
 - Conditional formatting highlights repeated names, which may be one guest using two numbers.
 
 **`Summary` tab** (formulas, excluding ignored rows)
 
-- Total guests attending. This is the number for the caterer.
-- Yes replies, No replies, and repeated names to review.
+- Guests at the betrothal and guests at the wedding. These are the numbers for the caterers.
+- Replies coming to at least one, replies that can't make it, replies yet to answer for the wedding, and repeated names to review.
 
 **Phone number as the unique key:** a phone number identifies a reply, because two guests may share a name. As a result, if two households reply using one shared number, the second reply replaces the first. Each reply should therefore include everyone it covers.
 
@@ -238,7 +239,8 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 
 - Close family use the `/invite` link, so they don't appear in the Sheet, and their numbers must be added by hand to the caterer's total.
 - The two links aren't private. A forwarded main link lets someone reply, and removing `/invite` from the address shows the form.
-- One answer covers both events, so someone attending only the betrothal still counts toward the reception total.
+- One tick box covers an event and its reception, so someone attending only the betrothal still counts toward the reception total.
+- A reply here replaces any earlier reply from the same phone number, so it sets a Wedding Yes from the combined site back to No.
 - Anyone with the link can reply, and the honeypot only stops simple bots. The family should skim for unfamiliar names.
 - There is no contact number on the page, so changes rely on the guest sending a new reply with the same number or calling the family directly.
 

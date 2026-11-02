@@ -1,8 +1,9 @@
-// RSVP endpoint for the betrothal invite. Kept here for reference; it runs in Google Apps Script.
+// RSVP endpoint shared by the betrothal site and the combined betrothal and wedding site.
+// Kept in both projects for reference; it runs in Google Apps Script.
 //
 // Setup, from the Sheet: Extensions > Apps Script, paste this file, then run setupSheet once.
-// Deploy > New deployment > Web app. Execute as: Me. Who has access: Anyone.
-// To update later, use Manage deployments > Edit > New version, so the URL stays the same.
+// To update, use Manage deployments > Edit > New version, so the URL stays the same.
+// A first deployment is Deploy > New deployment > Web app. Execute as: Me. Who has access: Anyone.
 
 var RESPONSES_TAB = "Responses";
 var SUMMARY_TAB = "Summary";
@@ -31,8 +32,8 @@ function doPost(e) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(RESPONSES_TAB);
     // Each phone number has one row, so a new reply replaces that number's earlier one.
     var row = findRowByPhone_(sheet, reply.phone) || sheet.getLastRow() + 1;
-    sheet.getRange(row, 1, 1, 5).setValues([[new Date(), reply.name, reply.phone, reply.attending, reply.guests]]);
-    sheet.getRange(row, 6).insertCheckboxes().setValue(false);
+    sheet.getRange(row, 1, 1, 6).setValues([[new Date(), reply.name, reply.phone, reply.betrothal, reply.wedding, reply.guests]]);
+    sheet.getRange(row, 7).insertCheckboxes().setValue(false);
   } catch (error) {
     return respond_({ ok: false, error: "Could not save the response" });
   } finally {
@@ -80,12 +81,19 @@ function validate_(data) {
   // Stored in one format, so the Phone column stays tidy.
   var phone = (data.phone.trim().charAt(0) === "+" ? "+" : "") + phoneDigits;
 
-  if (data.attending !== "yes" && data.attending !== "no") {
-    return { error: "Attending must be yes or no" };
+  // A page still open on the old form sends one answer, which only covered the betrothal.
+  // Its Wedding cell stays blank, meaning the guest hasn't answered that yet.
+  var betrothal = data.betrothal;
+  var wedding = data.wedding;
+  if (data.attending === "yes" || data.attending === "no") {
+    betrothal = data.attending === "yes";
+    wedding = null;
+  } else if (typeof betrothal !== "boolean" || typeof wedding !== "boolean") {
+    return { error: "Betrothal and wedding must each be true or false" };
   }
 
   var guests = 0;
-  if (data.attending === "yes") {
+  if (betrothal || wedding) {
     guests = data.guests;
     if (typeof guests !== "number" || guests % 1 !== 0 || guests < 1) {
       return { error: "Guests must be at least 1" };
@@ -97,20 +105,31 @@ function validate_(data) {
     name = "'" + name;
   }
 
-  return { name: name, phone: phone, attending: data.attending === "yes" ? "Yes" : "No", guests: guests };
+  return {
+    name: name,
+    phone: phone,
+    betrothal: betrothal ? "Yes" : "No",
+    wedding: wedding === null ? "" : wedding ? "Yes" : "No",
+    guests: guests,
+  };
 }
 
 function respond_(body) {
   return ContentService.createTextOutput(JSON.stringify(body)).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Run once from the editor. It creates both tabs and leaves any existing replies alone.
+// Run once from the editor. It creates both tabs and keeps any existing replies.
+// On the betrothal's old layout, its Attending column becomes Betrothal, since both hold Yes or No,
+// and a new Wedding column goes beside it, left blank for those replies.
 function setupSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   ss.setSpreadsheetTimeZone("Asia/Kolkata");
 
   var responses = ss.getSheetByName(RESPONSES_TAB) || ss.insertSheet(RESPONSES_TAB);
-  responses.getRange(1, 1, 1, 6).setValues([["Timestamp", "Name", "Phone", "Attending", "Guests", "Ignore"]]).setFontWeight("bold");
+  if (responses.getRange(1, 4).getValue() === "Attending") {
+    responses.insertColumnAfter(4);
+  }
+  responses.getRange(1, 1, 1, 7).setValues([["Timestamp", "Name", "Phone", "Betrothal", "Wedding", "Guests", "Ignore"]]).setFontWeight("bold");
   responses.setFrozenRows(1);
   responses.getRange("A2:A").setNumberFormat("dd mmm yyyy, h:mm am/pm");
   responses.getRange("C2:C").setNumberFormat("@"); // plain text, so a leading + or 0 is kept
@@ -122,18 +141,20 @@ function setupSheet() {
   var repeated = SpreadsheetApp.newConditionalFormatRule()
     .whenFormulaSatisfied('=AND($B2<>"",COUNTIF($B$2:$B,$B2)>1)')
     .setBackground("#F6E7B8")
-    .setRanges([responses.getRange("A2:F")])
+    .setRanges([responses.getRange("A2:G")])
     .build();
   responses.setConditionalFormatRules([repeated]);
 
   var summary = ss.getSheetByName(SUMMARY_TAB) || ss.insertSheet(SUMMARY_TAB);
   summary.clear();
-  summary.getRange(1, 1, 4, 2).setValues([
-    ["Total guests attending", '=SUMIFS(Responses!E2:E,Responses!D2:D,"Yes",Responses!F2:F,FALSE)'],
-    ["Yes replies", '=COUNTIFS(Responses!D2:D,"Yes",Responses!F2:F,FALSE)'],
-    ["No replies", '=COUNTIFS(Responses!D2:D,"No",Responses!F2:F,FALSE)'],
-    ["Replies with a repeated name to review", '=SUMPRODUCT((Responses!B2:B<>"")*(Responses!F2:F=FALSE)*(COUNTIFS(Responses!B2:B,Responses!B2:B,Responses!F2:F,FALSE)>1))'],
+  summary.getRange(1, 1, 6, 2).setValues([
+    ["Guests at the betrothal", '=SUMIFS(Responses!F2:F,Responses!D2:D,"Yes",Responses!G2:G,FALSE)'],
+    ["Guests at the wedding", '=SUMIFS(Responses!F2:F,Responses!E2:E,"Yes",Responses!G2:G,FALSE)'],
+    ["Replies coming to at least one", '=COUNTIFS(Responses!D2:D,"Yes",Responses!G2:G,FALSE)+COUNTIFS(Responses!D2:D,"No",Responses!E2:E,"Yes",Responses!G2:G,FALSE)'],
+    ["Replies that can't make it", '=COUNTIFS(Responses!D2:D,"No",Responses!E2:E,"No",Responses!G2:G,FALSE)'],
+    ["Replies yet to answer for the wedding", '=COUNTIFS(Responses!B2:B,"<>",Responses!E2:E,"",Responses!G2:G,FALSE)'],
+    ["Replies with a repeated name to review", '=SUMPRODUCT((Responses!B2:B<>"")*(Responses!G2:G=FALSE)*(COUNTIFS(Responses!B2:B,Responses!B2:B,Responses!G2:G,FALSE)>1))'],
   ]);
-  summary.getRange("A1:B1").setFontWeight("bold");
+  summary.getRange("A1:B2").setFontWeight("bold");
   summary.setColumnWidth(1, 340);
 }
