@@ -5,6 +5,8 @@
 // To update, use Manage deployments > Edit > New version, so the URL stays the same.
 // A first deployment is Deploy > New deployment > Web app. Execute as: Me. Who has access: Anyone.
 
+// The Sheet is named here, so replies can only go to this one, whichever script project is deployed.
+var SPREADSHEET_ID = "1T5FDBpi-bm94fjeM0ta2IPicsqInQNANqrIupM5VAK8";
 var RESPONSES_TAB = "Responses";
 var SUMMARY_TAB = "Summary";
 
@@ -27,11 +29,14 @@ function doPost(e) {
   }
 
   var lock = LockService.getScriptLock();
+  var ss;
+  var row;
   try {
     lock.waitLock(10000);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(RESPONSES_TAB);
+    ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(RESPONSES_TAB);
     // Each phone number has one row, so a new reply replaces that number's earlier one.
-    var row = findRowByPhone_(sheet, reply.phone) || sheet.getLastRow() + 1;
+    row = findRowByPhone_(sheet, reply.phone) || sheet.getLastRow() + 1;
     sheet.getRange(row, 1, 1, 6).setValues([[new Date(), reply.name, reply.phone, reply.betrothal, reply.wedding, reply.guests]]);
     sheet.getRange(row, 7).insertCheckboxes().setValue(false);
   } catch (error) {
@@ -40,7 +45,8 @@ function doPost(e) {
     lock.releaseLock();
   }
 
-  return respond_({ ok: true });
+  // Says where the reply went, so a test can confirm it from the response alone.
+  return respond_({ ok: true, spreadsheet: ss.getName(), row: row });
 }
 
 function findRowByPhone_(sheet, phone) {
@@ -122,7 +128,7 @@ function respond_(body) {
 // On the betrothal's old layout, its Attending column becomes Betrothal, since both hold Yes or No,
 // and a new Wedding column goes beside it, left blank for those replies.
 function setupSheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   ss.setSpreadsheetTimeZone("Asia/Kolkata");
 
   var responses = ss.getSheetByName(RESPONSES_TAB) || ss.insertSheet(RESPONSES_TAB);
