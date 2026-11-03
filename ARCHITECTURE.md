@@ -26,7 +26,7 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 | Reply date | Soft "kindly respond by" date; the form never closes |
 | RSVP storage | Google Sheet in Joseph's account, shared with the cousin and with the combined site (`../liz-gawin-wedding-betrothal`) |
 | Visual style | Ivory and antique gold, typography plus one fine-line illustration |
-| Opening | Straight to the invite with a gentle fade; no envelope or tap |
+| Opening | The sealed envelope from the other two invites, with an L & G wax seal. Tap anywhere to open, on every visit |
 | Extras | Google Maps link and Add to Calendar per event |
 | Address | Free subdomain: `liz-gawin-betrothal.vercel.app` |
 
@@ -38,7 +38,9 @@ A single-page, mobile-first invitation at one shared link. It shows the invitati
 
 ## 3. Page structure
 
-One scrolling page, in this order:
+A full-screen envelope covers the page until it's tapped, on both links. Each step runs on a timer rather than an animation event, so a dropped animation can't leave a guest stuck on it, and under `prefers-reduced-motion` it opens without the animation or petals.
+
+Below it is one scrolling page, in this order:
 
 1. **Logo**: interlocked rings with a small heart, followed by the Bible verse
 2. **Blessing line**
@@ -145,8 +147,9 @@ liz-gawin-betrothal/
   index.html          Page shell, plus static title and social preview tags
   styles.css          Design tokens and layout
   content.js          All names, dates, venues, links and the RSVP endpoint
-  main.js             Renders content, RSVP form, calendar links
+  main.js             Renders content, envelope, RSVP form, calendar links
   assets/
+    envelope-flap.svg, envelope-pocket.svg, seal.svg, petal.svg   Opening envelope, shared with the other two invites
     olive-branch.svg
     rings.svg         Interlocked rings and heart logo at the top of the page
     vine.svg          Repeating side vine for screens 900px and wider
@@ -259,7 +262,7 @@ There is no `doGet` that returns data, so the public URL can only add replies an
 - **Layout:** single centred column, at most 560px wide, with a 20px side gutter and generous vertical space. Hairline gold rules separate sections.
 - **Illustration:** fine-line olive artwork only, which suits the faith theme without adding a second religious symbol. One branch divides the invitation from the event details.
 - **Side decoration:** at 900px and wider, mirrored olive vines climb both sides of the page, repeating for its full length. Below 900px there's no room beside the text, so a small sprig sits in each corner of the page instead. All of it is CSS background art, so it can't intercept taps or be read out by screen readers.
-- **Motion:** one gentle fade on load, plus a slow sway on the side vines and corner sprigs. Both are disabled under `prefers-reduced-motion`.
+- **Motion:** the envelope, one gentle fade on load, and a slow sway on the side vines and corner sprigs. All of it is disabled under `prefers-reduced-motion`.
 - **Touch targets:** at least 48px for the stepper, radio options and buttons.
 
 ## 8. Directions and calendar
@@ -318,7 +321,7 @@ To update the script later, use **Manage deployments > Edit > New version**. Cre
 - [ ] Failed sends keep the entered values and allow a retry
 - [ ] Both Maps links open the correct location
 - [ ] Calendar entries show the correct time in IST, on iPhone and Android
-- [ ] The whole flow works inside WhatsApp's browser on both platforms
+- [ ] The envelope and the whole flow work inside WhatsApp's browser on both platforms
 - [ ] The WhatsApp preview shows the right title and image
 - [ ] An older relative can complete the RSVP without help
 - [ ] Test rows are deleted from the Sheet before the link goes out

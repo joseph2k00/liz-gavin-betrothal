@@ -12,6 +12,7 @@ window.INVITE = {
     parents: "Mr. Paul P D & Mrs. Lizy Paul",
     home: "Payyapilly",
   },
+  monogram: ["L", "G"], // the initials on the wax seal
   verse: { text: "I have found the one whom my soul loves", reference: "Song of Solomon 3:4" },
   date: "2026-12-26",
   replyBy: "2026-11-25",

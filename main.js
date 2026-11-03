@@ -6,6 +6,7 @@
   const SEND_TIMEOUT_MS = 15000;
   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
   const COUPLE = `${INVITE.brideSide.child} & ${INVITE.groomSide.child}`;
+  const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Helpers
 
@@ -178,7 +179,7 @@
         el("figcaption", {}, INVITE.verse.reference)
       ),
       el("p", { class: "blessing" }, INVITE.blessing),
-      el("h1", { class: "ceremony-title" }, "Betrothal Ceremony"),
+      el("h1", { class: "ceremony-title", tabindex: "-1" }, "Betrothal Ceremony"),
       el("div", { class: "heart-rule" },
         el("img", { src: "assets/heart.svg", alt: "", width: "22", height: "16" })
       ),
@@ -445,13 +446,69 @@
     return section;
   }
 
+  // Envelope
+
+  function dropPetals() {
+    for (let i = 0; i < 16; i++) {
+      const petal = el("span", { class: "petal", "aria-hidden": "true" });
+      petal.style.left = `${Math.random() * 100}%`;
+      petal.style.setProperty("--wait", `${Math.random() * 1.2}s`);
+      petal.style.setProperty("--fall", `${3 + Math.random() * 2}s`);
+      petal.style.setProperty("--drift", `${-50 + Math.random() * 100}px`);
+      petal.style.setProperty("--spin", `${180 + Math.random() * 540}deg`);
+      petal.addEventListener("animationend", () => petal.remove());
+      document.body.append(petal);
+    }
+  }
+
+  function showEnvelope(main) {
+    const firstNames = `${INVITE.brideSide.child.split(" ")[0]} & ${INVITE.groomSide.child.split(" ")[0]}`;
+    const sealHalf = () => el("span", { class: "seal-half" }, INVITE.monogram[0], el("small", {}, "&"), INVITE.monogram[1]);
+
+    const envelope = el("button", { type: "button", class: "envelope", "aria-label": `Open your invitation from ${firstNames}` },
+      el("span", { class: "env-back" }),
+      el("span", { class: "env-card" }),
+      el("span", { class: "env-pocket" },
+        el("span", { class: "env-names" }, firstNames, el("em", {}, "Betrothal"))
+      ),
+      el("span", { class: "env-flap" }),
+      el("span", { class: "seal" }, sealHalf(), sealHalf())
+    );
+    const gate = el("div", { class: "gate" }, envelope, el("p", { class: "gate-hint", "aria-hidden": "true" }, "Tap to open"));
+
+    main.inert = true;
+    document.documentElement.classList.add("gate-up");
+    document.body.append(gate);
+
+    // A tap anywhere opens it, since guests may tap the "Tap to open" text rather than the envelope.
+    // Timers rather than animation events, so a dropped animation can't leave a guest stuck here.
+    gate.addEventListener("click", () => {
+      envelope.disabled = true;
+      window.scrollTo(0, 0); // after a refresh the browser may have restored a scroll position
+      gate.classList.add("is-opening");
+      const [leaveAt, doneAt] = REDUCED_MOTION ? [0, 50] : [1500, 2200];
+      setTimeout(() => {
+        gate.classList.add("is-leaving");
+        main.inert = false;
+        document.documentElement.classList.remove("gate-up");
+        if (!REDUCED_MOTION) dropPetals();
+      }, leaveAt);
+      setTimeout(() => {
+        gate.remove();
+        main.querySelector("h1").focus({ preventScroll: true });
+      }, doneAt);
+    }, { once: true });
+  }
+
   // Close family get the /invite link, which is the same page without the RSVP form.
   const showRsvp = location.pathname.replace(/\/$/, "") !== "/invite";
 
-  document.getElementById("invite").replaceChildren(
+  const main = document.getElementById("invite");
+  main.replaceChildren(
     renderInvitation(),
     renderDetails(),
     ...(showRsvp ? [renderRsvp()] : []),
     el("p", { class: "closing" }, INVITE.closing)
   );
+  showEnvelope(main);
 })();
